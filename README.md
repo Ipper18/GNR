@@ -1,0 +1,2 @@
+# GNR
+GNR-Teoria ruchu 
