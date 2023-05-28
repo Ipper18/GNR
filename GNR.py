@@ -1,74 +1,86 @@
 import time
+import webbrowser
+import tkinter as tk
+from tkinter import messagebox
 import plotly
 import plotly.graph_objects as go
 import pandas as pd
-import datetime
-
-
 
 excel_file = 'minuty.xlsx'
 
-print("Odczytywanie pliku")
-df = pd.read_excel(excel_file)
+def generate_plots():
+    print("Odczytywanie pliku")
+    df = pd.read_excel(excel_file)
 
-print("Obliczanie średniej intensywności ruchu")
-srednia = df['intensywnosc'].mean()
+    print("Obliczanie średniej intensywności ruchu")
+    srednia = df['intensywnosc'].mean()
 
-a = df['minuta']
-b = df['ruch']
+    a = df['minuta']
+    b = df['ruch']
 
-for i in range(len(b)):
-    b[i] = b[i] * srednia
+    for i in range(len(b)):
+        b[i] = b[i] * srednia
 
-print("Obliczanie godziny największego ruchu")
-highest = 0
-highest_index = 0
+    print("Obliczanie godziny największego ruchu")
+    highest = 0
+    highest_index = 0
 
-for i in range(0, len(b) - 59):
-    current = 0   
-    for j in range(0, 59):
-        current = current + b[i+j]    
-    if current > highest:
-        highest = current        
-        highest_index = i
+    for i in range(0, len(b) - 59):
+        current = 0   
+        for j in range(0, 59):
+            current = current + b[i+j]    
+        if current > highest:
+            highest = current        
+            highest_index = i
 
-c = []
-d = []
+    c = []
+    d = []
 
-for i in range(int(highest_index), int(highest_index) + 60, 1):
-    c.append(a[i])
-    d.append(b[i])
+    for i in range(int(highest_index), int(highest_index) + 60, 1):
+        c.append(a[i])
+        d.append(b[i])
 
-print("Tworzenie wykresu")
-fig = go.Figure()
+    print("Tworzenie wykresu")
+    fig = go.Figure()
 
-def convert_to_time(number):
-    hours = int(number)
-    minutes = int((number - hours) * 60)
-    time_obj = datetime.time(hours, minutes)
-    return time_obj.strftime("%H:%M")
+    godz = []
+    h = 1
+    for i in range(len(a)):
+        h = (a[i]) / 60 
+        godz.append(round(h, 2))
 
-godz = []
-h=1
-for i in range(len(a)):
-    h = (a[i])/60 
-    godz.append(round(h,2))
-    print(h)
+    hours = [str(hour).zfill(2) for hour in godz]  # Tworzenie listy godzin w formacie HH:00
 
-#zmieniona = [convert_to_time(number) for number in godz]
+    fig.add_trace(go.Scatter(x=hours, y=b, name="Ruch w ciągu dnia"))
+    fig.add_trace(go.Scatter(x=hours[int(highest_index):int(highest_index) + 60], y=d, name='Godzina największego ruchu'))
 
-hours = [str(hour).zfill(2) for hour in godz]  # Tworzenie listy godzin w formacie HH:00
+    fig.update_layout(
+        title="Wyznaczanie godziny największego ruchu",
+        xaxis_title="Czas [godziny]",
+        yaxis_title="Intensywność"
+    )
 
-fig.add_trace(go.Scatter(x=hours, y=b, name="Ruch w ciągu dnia"))
-fig.add_trace(go.Scatter(x=hours[int(highest_index):int(highest_index) + 60], y=d, name='Godzina największego ruchu'))
+    plotly.offline.plot(fig, filename="ruch.html")
 
-fig.update_layout(
-    title="Wyznaczanie godziny największego ruchu",
-    xaxis_title="Czas [godziny]",
-    yaxis_title="Intensywność"
-)
+    print("Wyniki programu zapisane w pliku HTML")
 
-plotly.offline.plot(fig, filename="ruch.html")
+def show_menu():
+    window = tk.Tk()
+    window.title("Menu")
 
-print("Wyniki programu zapisane w pliku HTML")
-time.sleep(10)
+    def show_description():
+        messagebox.showinfo("Opis", "Ten program generuje wykresy na podstawie danych z pliku 'minuty.xlsx'.\n Plik ten należy stworzyć tak aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruchu w ciągu jednej minuty oraz w trzeciej kolumnie intensywno i dodajemy tam długość w minutach poszczególnej rozmowy.")
+
+    def open_plots():
+        generate_plots()
+        #webbrowser.open("ruch.html")
+
+    description_button = tk.Button(window, text="Opis programu", command=show_description)
+    description_button.pack(pady=10)
+
+    plots_button = tk.Button(window, text="Stwórz i wyświetl wykresy", command=open_plots)
+    plots_button.pack(pady=10)
+
+    window.mainloop()
+
+show_menu()
