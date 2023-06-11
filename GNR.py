@@ -1,3 +1,4 @@
+import os
 import time
 import webbrowser
 import tkinter as tk
@@ -7,6 +8,7 @@ import plotly.graph_objects as go
 import pandas as pd
 
 excel_file = 'minuty.xlsx'
+html_file = 'ruch.html'
 
 def generate_plots():
     print("Odczytywanie pliku")
@@ -26,11 +28,11 @@ def generate_plots():
     highest_index = 0
 
     for i in range(0, len(b) - 59):
-        current = 0   
+        current = 0
         for j in range(0, 59):
-            current = current + b[i+j]    
+            current = current + b[i+j]
         if current > highest:
-            highest = current        
+            highest = current
             highest_index = i
 
     c = []
@@ -46,7 +48,7 @@ def generate_plots():
     godz = []
     h = 1
     for i in range(len(a)):
-        h = (a[i]) / 60 
+        h = (a[i]) / 60
         godz.append(round(h, 2))
 
     hours = [str(hour).zfill(2) for hour in godz]  # Tworzenie listy godzin w formacie HH:00
@@ -60,12 +62,12 @@ def generate_plots():
         yaxis_title="Intensywność"
     )
 
-    plotly.offline.plot(fig, filename="ruch.html")
+    plotly.offline.plot(fig, filename=html_file)
 
     print("Wyniki programu zapisane w pliku HTML")
 
     # Dodanie informacji o godzinie największego ruchu i średnim ruchu do końcowego pliku HTML
-    with open("ruch.html", "a") as file:
+    with open(html_file, "a") as file:
         start_time = hours[int(highest_index)]
         end_time = hours[int(highest_index) + 59]
         average_traffic = srednia
@@ -78,16 +80,23 @@ def show_menu():
     window.geometry("300x300")
 
     def show_description():
-        messagebox.showinfo("Opis", "Ten program generuje wykres Godzin Największego Ruchu wraz z zaznaczoną godziną w ciągu dnia z największym ruchem na podstawie danych z pliku 'minuty.xlsx'.\n\n Plik ten należy stworzyć tak aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruchu w ciągu jednej minuty oraz w trzeciej kolumnie intensywno i dodajemy tam długość w minutach poszczególnej rozmowy.\n\n ")
+        messagebox.showinfo("Opis", "Ten program generuje wykres Godzin Największego Ruchu wraz z zaznaczoną godziną w ciągu dnia z największym ruchem na podstawie danych z pliku 'minuty.xlsx'.\n\n Plik ten należy stworzyć tak, aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruch w ciągu jednej minuty oraz w trzeciej kolumnie intensywność i dodajemy tam długość w minutach poszczególnej rozmowy.\n\n ")
 
     def open_plots():
-        generate_plots()
-        #webbrowser.open("ruch.html")
+        if os.path.isfile(html_file):
+            webbrowser.open(html_file)
+        else:
+            messagebox.showinfo("Brak wykresu", "Wykres jeszcze nie został stworzony. Kliknij 'Stwórz wykres'.")
+
+
 
     description_button = tk.Button(window, text="Opis programu", command=show_description)
     description_button.pack(pady=10, anchor="center")
 
-    plots_button = tk.Button(window, text="Stwórz i wyświetl wykresy", command=open_plots)
+    generate_button = tk.Button(window, text="Stwórz i wyświetl wykresy", command=generate_plots)
+    generate_button.pack(pady=10, anchor="center")
+
+    plots_button = tk.Button(window, text="Wyświetl wykresy", command=open_plots)
     plots_button.pack(pady=10, anchor="center")
 
     window.mainloop()
