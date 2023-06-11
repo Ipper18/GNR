@@ -64,11 +64,13 @@ def generate_plots():
 
     print("Wyniki programu zapisane w pliku HTML")
 
-    # Dodanie informacji o godzinie największego ruchu do końcowego pliku HTML
+    # Dodanie informacji o godzinie największego ruchu i średnim ruchu do końcowego pliku HTML
     with open("ruch.html", "a") as file:
         start_time = hours[int(highest_index)]
         end_time = hours[int(highest_index) + 59]
+        average_traffic = srednia
         file.write(f"<p>Godzina najwiekszego ruchu: {start_time} - {end_time}</p>")
+        file.write(f"<p>Sredni ruch w ciagu calego dnia: {average_traffic}</p>")
 
 def show_menu():
     window = tk.Tk()
