@@ -64,22 +64,29 @@ def generate_plots():
 
     print("Wyniki programu zapisane w pliku HTML")
 
+    # Dodanie informacji o godzinie największego ruchu do końcowego pliku HTML
+    with open("ruch.html", "a") as file:
+        start_time = hours[int(highest_index)]
+        end_time = hours[int(highest_index) + 59]
+        file.write(f"<p>Godzina najwiekszego ruchu: {start_time} - {end_time}</p>")
+
 def show_menu():
     window = tk.Tk()
     window.title("Menu")
+    window.geometry("300x300")
 
     def show_description():
-        messagebox.showinfo("Opis", "Ten program generuje wykresy na podstawie danych z pliku 'minuty.xlsx'.\n Plik ten należy stworzyć tak aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruchu w ciągu jednej minuty oraz w trzeciej kolumnie intensywno i dodajemy tam długość w minutach poszczególnej rozmowy.")
+        messagebox.showinfo("Opis", "Ten program generuje wykres Godzin Największego Ruchu wraz z zaznaczoną godziną w ciągu dnia z największym ruchem na podstawie danych z pliku 'minuty.xlsx'.\n\n Plik ten należy stworzyć tak aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruchu w ciągu jednej minuty oraz w trzeciej kolumnie intensywno i dodajemy tam długość w minutach poszczególnej rozmowy.\n\n ")
 
     def open_plots():
         generate_plots()
         #webbrowser.open("ruch.html")
 
     description_button = tk.Button(window, text="Opis programu", command=show_description)
-    description_button.pack(pady=10)
+    description_button.pack(pady=10, anchor="center")
 
     plots_button = tk.Button(window, text="Stwórz i wyświetl wykresy", command=open_plots)
-    plots_button.pack(pady=10)
+    plots_button.pack(pady=10, anchor="center")
 
     window.mainloop()
 
