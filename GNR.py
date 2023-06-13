@@ -1,5 +1,4 @@
 import os
-import time
 import webbrowser
 import tkinter as tk
 from tkinter import messagebox
@@ -80,7 +79,7 @@ def show_menu():
     window.geometry("300x300")
 
     def show_description():
-        messagebox.showinfo("Opis", "Ten program generuje wykres Godzin Największego Ruchu wraz z zaznaczoną godziną w ciągu dnia z największym ruchem na podstawie danych z pliku 'minuty.xlsx'.\n\n Plik ten należy stworzyć tak, aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruch w ciągu jednej minuty oraz w trzeciej kolumnie intensywność i dodajemy tam długość w minutach poszczególnej rozmowy.\n\n ")
+        messagebox.showinfo("Opis", "Ten program generuje wykres Godzin Największego Ruchu wraz z zaznaczoną godziną w ciągu dnia z największym ruchem na podstawie danych z pliku 'minuty.xlsx'.\n\n Plik ten należy stworzyć tak, aby w pierwszej kolumnie znajdowały się minuty, a w drugiej ruch w ciągu jednej minuty oraz w trzeciej kolumnie intensywność i dodajemy tam długość w minutach poszczególnej rozmowy.\n\n\n By: Igor Pakowski 263847\n ")
 
     def open_plots():
         if os.path.isfile(html_file):
